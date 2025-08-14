@@ -1,5 +1,5 @@
 from networksecurity.exception.exception import NetworkSecurity
-from networksecurity.logging.logger import logging
+from networksecurity.logging.logger import logger
 
 
 ## configuration of the Data Ingestion Config
@@ -62,9 +62,9 @@ class DataIngestion:
             train_set, test_set = train_test_split(
                 dataframe, test_size=self.data_ingestion_config.train_test_split_ratio
             )
-            logging.info("Performed train test split on the dataframe")
+            logger.info("Performed train test split on the dataframe")
 
-            logging.info(
+            logger.info(
                 "Exited split_data_as_train_test method of Data_Ingestion class"
             )
             
@@ -72,7 +72,7 @@ class DataIngestion:
             
             os.makedirs(dir_path, exist_ok=True)
             
-            logging.info(f"Exporting train and test file path.")
+            logger.info(f"Exporting train and test file path.")
             
             train_set.to_csv(
                 self.data_ingestion_config.training_file_path, index=False, header=True
@@ -81,7 +81,7 @@ class DataIngestion:
             test_set.to_csv(
                 self.data_ingestion_config.testing_file_path, index=False, header=True
             )
-            logging.info(f"Exported train and test file path.")
+            logger.info(f"Exported train and test file path.")
 
             
         except Exception as e:
