@@ -9,4 +9,5 @@ RUN apt-get update -y && apt-get install -y awscli \
 RUN pip install --no-cache-dir -r requirements.txt
 
 #  This keeps the container alive and serves FastAPI
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+
