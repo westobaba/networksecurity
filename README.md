@@ -1,22 +1,36 @@
-# Network Security Phishing Detection Project  
+ 🛡️ Network Security: Phishing Detection Pipeline  
 
-This project focuses on detecting phishing attacks using machine learning techniques.  
-It includes a complete ETL → Training → Deployment pipeline, with MLflow experiment tracking and Dockerized deployment for reproducibility.  
+A complete **end-to-end MLOps project** for detecting phishing URLs using machine learning and deploying the model through a **Dockerized FastAPI application**.  
+
+This project demonstrates ETL pipelines, data validation, model training with MLflow tracking, and artifact management using AWS S3 — providing a real-world network security ML workflow.  
 
 ---
 
 ## 🚀 Key Features  
 
-- **Data Pipeline:** Automated ETL and validation of network data  
-- **Model Training:** Machine learning model trained and tracked via MLflow  
-- **Deployment:** FastAPI-based API for model inference  
-- **Cloud Integration:** Model artifacts and data stored in AWS S3  
-- **Reproducibility:** Docker environment for consistent builds and deployments  
-- **Database Integration:** MongoDB for data management  
+### 🧩 Data Engineering (ETL)
+- Extracts, transforms, and loads phishing data from network sources.  
+- Cleans, validates, and prepares data for model training.  
+
+### 🧾 Data Validation  
+- Ensures incoming data conforms to defined schemas (`data_schema/`).  
+
+### 🧠 Model Training & Tracking  
+- Uses **MLflow** for experiment tracking and model versioning.  
+- Models and metrics are automatically logged and stored.  
+
+### 🧱 Artifact Management  
+- Trained models and ML artifacts are pushed to **AWS S3**.  
+
+### ⚡ FastAPI Inference App  
+- Serves predictions through a lightweight and scalable API.  
+
+### 🐳 Dockerized Deployment  
+- End-to-end reproducible environment using Docker.  
 
 ---
 
-## 🧰 Tech Stack  
+## 🧠 Tech Stack  
 
 | Category | Tools / Frameworks |
 |-----------|--------------------|
@@ -36,57 +50,131 @@ It includes a complete ETL → Training → Deployment pipeline, with MLflow exp
 
 ```bash
 networksecurity/
-├── app.py                # FastAPI app for model serving
-├── main.py               # Model training and MLflow tracking script
-├── push_data.py          # ETL pipeline for loading and validating data
-├── test_mongodb.py       # MongoDB database connection test
-├── Dockerfile            # Docker environment setup
-├── requirements.txt      # Project dependencies
-├── setup.py              # Project setup file
-├── mlflow.db             # Local MLflow tracking database
-├── mlruns/               # MLflow experiment tracking folder
-├── final_model/          # Saved trained model
-├── network_data/         # Raw and processed data
-├── valid_data/           # Validated data
-├── data_schema/          # Schema definitions for validation
-├── prediction_output/    # Model predictions output
-├── templates/            # Frontend or FastAPI templates
-└── README.md             # Project documentation
-🐳 Dockerized Deployment
-You can run the entire application inside Docker for a consistent environment.
+├── app.py                  # FastAPI app for model serving
+├── main.py                 # Main training and MLflow tracking script
+├── push_data.py            # ETL pipeline for loading and validating data
+├── test_mongodb.py         # Database connection test
+├── Dockerfile              # Docker environment setup
+├── requirements.txt        # Dependencies
+├── setup.py                # Project setup file
+├── mlflow.db               # Local MLflow tracking database
+├── mlruns/                 # MLflow experiment tracking folder
+├── final_model/            # Saved trained model
+├── network_data/           # Raw and processed data
+├── valid_data/             # Validated data
+├── data_schema/            # Schema definitions for validation
+├── prediction_output/      # Model predictions output
+├── templates/              # Frontend or FastAPI templates
+└── README.md               # Project documentation
+🧩 Workflow Overview
+1️⃣ Data Ingestion
+Source data is pulled using push_data.py from phishing repositories or MongoDB.
 
-Build the Docker image
+Schema validation ensures only clean data proceeds to training.
+
+2️⃣ Feature Engineering & Validation
+Data is transformed and stored in valid_data/.
+
+Schema and integrity checks are performed via data_schema/.
+
+3️⃣ Model Training
+Run main.py to train the model.
+
+MLflow logs metrics, parameters, and artifacts to mlruns/.
+
+Best model is exported to final_model/ and uploaded to S3.
+
+4️⃣ Deployment (FastAPI + Docker)
+FastAPI app (app.py) loads the latest model from S3 or local storage.
+
+Build and run the Docker container for inference.
+
+⚙️ Installation & Setup
+1. Clone Repository
 bash
 Copy code
-docker build -t networksecurity-app .
-Run the container
+git clone https://github.com/westobaba/networksecurity-phishing.git
+cd networksecurity-phishing
+2. Create Virtual Environment
 bash
 Copy code
-docker run -p 8000:8000 networksecurity-app
-Access the app at http://localhost:8000
-
-📊 MLflow Tracking
-All model training runs, metrics, and artifacts are logged in MLflow.
-You can start the MLflow UI locally:
+python -m venv venv
+venv\Scripts\activate   # Windows
+# or
+source venv/bin/activate  # Linux/Mac
+3. Install Dependencies
+bash
+Copy code
+pip install -r requirements.txt
+4. Configure AWS & MongoDB
+Create a .env file or set environment variables:
 
 bash
 Copy code
-mlflow ui
-Then open http://localhost:5000 in your browser to explore experiment results.
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_BUCKET_NAME=your_bucket
+MONGODB_URI=mongodb+srv://...
+🐳 Docker Deployment
+Build Docker Image
+bash
+Copy code
+docker build -t phishing-detector .
+Run Docker Container
+bash
+Copy code
+docker run -p 8080:8080 phishing-detector
+Visit the API at 👉 http://localhost:8080
 
-☁️ Cloud Storage
-Model artifacts and data are automatically pushed to AWS S3 for backup and versioning.
+📈 MLflow Tracking
+Start MLflow UI to view experiment runs:
 
-🧩 Future Enhancements
-Add real-time phishing detection API endpoints
+bash
+Copy code
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+Then open http://localhost:5000 to explore logged runs, metrics, and models.
 
-Integrate advanced deep learning models
+🧪 Example Prediction
+Request:
 
-Enable CI/CD for automated retraining and deployment
+bash
+Copy code
+curl -X POST "http://localhost:8080/predict" \
+     -H "Content-Type: application/json" \
+     -d '{"url": "http://suspicious-example.com/login"}'
+Response:
 
-🧑‍💻 Author
+json
+Copy code
+{
+  "url": "http://suspicious-example.com/login",
+  "prediction": "Phishing",
+  "confidence": 0.97
+}
+🧰 Key Folders Summary
+Folder	Description
+network_data/	Raw and processed input data
+data_schema/	Data validation schemas
+valid_data/	Cleaned, validated data used for training
+final_model/	Trained ML model
+prediction_output/	Model inference results
+mlruns/	MLflow experiment tracking metadata
+
+🔐 S3 Integration
+Models and artifacts are automatically pushed to your AWS S3 bucket after training for secure storage and deployment use.
+
+🧾 Future Improvements
+Implement real-time phishing detection API
+
+Integrate CI/CD pipeline with GitHub Actions
+
+Add model monitoring and automatic retraining
+
+Enhance feature extraction using NLP-based URL analysis
+
+📄 License
+This project is licensed under the MIT License — free to use and modify.
+
+👤 Author
 Kelvin Benjamin
-Machine Learning Engineer | Data Scientist
-
-📝 License
-This project is open-source under the MIT License.
+Data Scientist & MLOps Enthusiast
